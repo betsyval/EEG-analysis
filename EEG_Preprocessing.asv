@@ -93,31 +93,22 @@ data_clean   = ft_rejectvisual(cfg, data_all);
 disp(data_clean.trialinfo')
 %computing and plotting ERPs
 % use ft_timelockanalysis to compute the ERPs 
-% cfg = [];
-% cfg.trials = find(cfg_vis_condA);
-% task1 = ft_timelockanalysis(cfg, data_all);
-% 
-% cfg = [];
-% cfg.trials = find(cfg_vis_condB);
-% task2 = ft_timelockanalysis(cfg, data_all);
-% 
-% cfg = [];
-% cfg.layout = 'mpi_customized_acticap64.mat';
-% cfg.interactive = 'yes';
-% cfg.showoutline = 'yes';
-% ft_multiplotER(cfg, task1, task2)
-
-%averaging trials
 cfg = [];
-avgCondA = ft_timelockanalysis(cfg_vis_condA, data_all);
-avgCondB = ft_timelockanalysis(cfg_vis_condB,   data_all);
+cfg.trials = find(cfg_vis_condA);
+task1 = ft_timelockanalysis(cfg, data_all);
 
-%plotting - but still the layout
 cfg = [];
-cfg.showlabels = 'yes'; 
-cfg.fontsize = 6; 
-cfg.layout = 'CTF151.lay';
-cfg.ylim = [-3e-13 3e-13];
-ft_multiplotER(cfg, avgFIC); 
+cfg.trials = find(cfg_vis_condB);
+task2 = ft_timelockanalysis(cfg, data_all);
 
+cfg = [];
+cfg.layout = 'mpi_customized_acticap64.mat';
+cfg.interactive = 'yes';
+cfg.showoutline = 'yes';
+ft_multiplotER(cfg, task1, task2)
+
+cfg = [];
+avgFIC = ft_timelockanalysis(cfg, dataFIC_LP);
+avgFC = ft_timelockanalysis(cfg, dataFC_LP);
+avgIC = ft_timelockanalysis(cfg, dataIC_LP);
 
