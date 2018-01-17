@@ -49,9 +49,27 @@ data_eogv.label{2} = 'EOGV';
 cfg = [];
 cfg.channel = 'EOGV';
 data_eogv = ft_preprocessing(cfg, data_eogv); % nothing will be done, only the selection of the interesting channel
+%reading lips
+cfg = [];
+cfg.dataset = '301.vhdr';
+cfg.channel = {'LipUp', 'LipLow'}; %is there a difference in which above/below put before?
+cfg.reref = 'yes';
+cfg.refchannel = 'LipLow'  %%here I'm not 100% sure if I should put LipUp
+data_lips = ft_preprocessing(cfg);
+data_lips.label{2} = 'LIPS'; %rename/discard dummy channe
+cfg = [];
+cfg.channel = 'LIPS';
+data_lips = ft_preprocessing(cfg, data_lips); % nothing will be done, only the selection of the interesting channel
+%checking lips --doesn't work
+figure
+plot(data_lips.time{1}, data_lips.trial{1}(1,:));
+hold on
+plot(data_lips.time{1}, data_lips.trial{1}(2,:),'g'); 
+legend({'LipUp' 'LipLow'}); 
+
 %combination of a single representation of using
 cfg = [];
-data_all = ft_appenddata(cfg, data_eeg, data_eogh, data_eogv);
+data_all = ft_appenddata(cfg, data_eeg, data_eogh, data_eogv, data_lips);
 
 %trial segmentation
 cfg = [];
