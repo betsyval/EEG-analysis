@@ -11,10 +11,15 @@ cfg = [];
 cfg.dataset     = '301.vhdr';
 cfg.reref       = 'yes';
 cfg.channel     = 'all';
-cfg.implicitref = 'LinkMast';            % the implicit (non-recorded) reference channel is added to the data representation
+cfg.implicitref = 'TP9';            % the implicit (non-recorded) reference channel is added to the data representation
 cfg.refchannel     = {'LinkMast', 'TP9'}; % the average of these channels is used as the new reference
 data_eeg        = ft_preprocessing(cfg);
-%discard dummy channels?
+
+%this is for discarding a channel after re-referencing, but I'm not sure how to edit it 
+%cfg = [];
+%cfg.channel     = [1:61 65];                      % keep channels 1 to 61 and the newly inserted M1 channel
+%data_eeg        = ft_preprocessing(cfg, data_eeg);
+
 %this is to look at three channels
 plot(data_eeg.time{1}, data_eeg.trial{1}(1:3,:));
 legend(data_eeg.label(1:3));
@@ -71,21 +76,34 @@ legend({'LipUp' 'LipLow'});
 cfg = [];
 data_all = ft_appenddata(cfg, data_eeg, data_eogh, data_eogv, data_lips);
 
+%filtering
+cfg = [];
+cfg.dataset             = '301.vhdr';
+cfg.lpfilter            = 'yes';
+cfg.hpfilter            = 'yes';
+cfg.lpfreq              = 30;
+cfg.hpfreq              = 0.1; 
+data_eeg                = ft_preprocessing(cfg);
+
 %trial segmentation
 cfg = [];
 cfg.dataset             = '301.vhdr';
 cfg.trialdef.eventtype = '?';
 dummy                   = ft_definetrial(cfg);
 
-%select data of two conditions --- it works!
+%select data of two conditions 
 cfg = [];
 cfg.dataset             = '301.vhdr';
 cfg.trialdef.eventtype = 'Stimulus';
+cfg.trialdef.prestim        = 1;
+cfg.trialdef.poststim       = 2;
 cfg.trialdef.eventvalue = {'S208', 'S218'};
 cfg_vis_condA          = ft_definetrial(cfg);
 
 cfg.trialdef.eventvalue = {'S209', 'S219'};
 cfg_vis_condB            = ft_definetrial(cfg);
+
+%%here sort out something to select only trial with no mistakes
 
 %cut the trials out of the continuous data segment
 data_vis_condA = ft_redefinetrial(cfg_vis_condA, data_all);
@@ -104,7 +122,7 @@ ft_rejectvisual(cfg, data_all)
 
 cfg = [];
 cfg.method   = 'summary';
-cfg.layout   = 'mpi_customized_acticap64.mat';   % this allows for plotting individual trials
+cfg.layout   = 'actiCAP_64ch_Standard2.mat';   % this allows for plotting individual trials
 cfg.channel  = [1:60];    % do not show EOG channels
 data_clean   = ft_rejectvisual(cfg, data_all);
 
@@ -138,4 +156,9 @@ cfg.layout = 'CTF151.lay';
 cfg.ylim = [-3e-13 3e-13];
 ft_multiplotER(cfg, avgFIC); 
 
-
+%manual artifact rejection
+%browse throgh the data trial by trial
+cfg          = [];
+cfg.method   = 'trial';
+cfg.alim     = 5e-5; 
+dummy        = ft_rejectvisual(cfg,dataFIC);
