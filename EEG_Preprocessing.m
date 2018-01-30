@@ -1,5 +1,5 @@
 %%% EEG analysis script 14/11/2017 %%%
-addpath('C:\Users\s1011306\Downloads\fieldtrip-20180114\fieldtrip-20180114')
+addpath('\\cnas.ru.nl\wrkgrp\STD-Back-Up-Exp2-EEG\301\Day 3\EEG - Copy')
 
 %read continuous data
 cfg = [];
